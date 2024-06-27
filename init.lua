@@ -242,9 +242,44 @@ require('lazy').setup({
     'nvim-telescope/telescope-file-browser.nvim',
     dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
   },
-  -- Here is a more advanced example where we pass configuration
-  -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
-  --    require('gitsigns').setup({ ... })
+
+  {
+    -- add the cloak.nvim plugin
+    -- This plugin hides your Neovim setup when you open it.
+    -- It's a nice way to keep your setup private when you're streaming or sharing your screen.
+    -- See `:help cloak.nvim` for more information
+    -- NOTE: This plugin is disabled by default. You can enable it by running `:Cloak`
+    -- or by setting `g:cloak_enabled` to `true` in your `init.lua`
+    -- See `:help cloak.nvim`
+    'laytan/cloak.nvim',
+    config = function()
+      require('cloak').setup {
+        enabled = true, -- enable Cloak.nvim
+        cloak_character = '*', -- character to replace sensitive information with
+        try_all_patterns = true,
+        -- Set to true to cloak Telescope preview buffers. (Required feature not in 0.1.x)
+        cloak_telescope = true,
+        -- Add any additional configuration options here
+        cloak_on_leave = false,
+        patterns = {
+          {
+            -- Match any file starting with '.env'.
+            -- This can be a table to match multiple file patterns.
+            file_pattern = '.env*',
+            -- Match an equals sign and any character after it.
+            -- This can also be a table of patterns to cloak,
+            -- example: cloak_pattern = { ':.+', '-.+' } for yaml files.
+            cloak_pattern = '=.+',
+            -- A function, table or string to generate the replacement.
+            -- The actual replacement will contain the 'cloak_character'
+            -- where it doesn't cover the original text.
+            -- If left empty the legacy behavior of keeping the first character is retained.
+            replace = nil,
+          },
+        },
+      }
+    end,
+  },
   --
   -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
@@ -262,6 +297,9 @@ require('lazy').setup({
 
   {
     'github/copilot.vim',
+  },
+  {
+    'https://github.com/tpope/vim-commentary.git',
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -698,7 +736,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<TAB>'] = cmp.mapping.confirm { select = true },
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
